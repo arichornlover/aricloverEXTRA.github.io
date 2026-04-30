@@ -185,3 +185,38 @@ previewCarousel?.addEventListener("pointerup", e => {
 });
 
 previewCarousel?.addEventListener("pointercancel", () => pointerDown = false);
+
+/* Filter functionality */
+const filterToggle = document.getElementById("filterToggle");
+const filterContainer = document.getElementById("filterContainer");
+const clearFiltersBtn = document.getElementById("clearFiltersBtn");
+const filterPills = document.querySelectorAll(".filter-pill:not(.disabled)");
+
+if (filterToggle) {
+  filterToggle.addEventListener("click", () => {
+    filterContainer.classList.toggle("open");
+    filterToggle.classList.toggle("open");
+  });
+}
+
+filterPills.forEach(pill => {
+  pill.addEventListener("click", (e) => {
+    const filterValue = pill.getAttribute("data-filter");
+    const isActive = pill.classList.contains("active");
+    
+    if (isActive) {
+      pill.classList.remove("active");
+      removeFilter(filterValue);
+    } else {
+      pill.classList.add("active");
+      addFilter(filterValue);
+    }
+  });
+});
+
+if (clearFiltersBtn) {
+  clearFiltersBtn.addEventListener("click", () => {
+    filterPills.forEach(pill => pill.classList.remove("active"));
+    clearAllFilters();
+  });
+}
