@@ -27,7 +27,7 @@ function buildVersionList() {
       left.className = "version-left";
 
       const titleWrap = document.createElement("div");
-      titleWrap.style.cssText = "display:flex;align-items:center;gap:8px";
+      titleWrap.style.cssText = "display:flex;align-items:center;gap:8px;flex-wrap:wrap";
 
       const title = document.createElement("div");
       title.className = "version-label";
@@ -59,8 +59,6 @@ function buildVersionList() {
         btn.title = "View changelog";
         btn.onclick = e => { e.stopPropagation(); openChangelog(entry.changelog, label); };
         right.appendChild(btn);
-      } else {
-        right.style.width = "72px";
       }
 
       item.appendChild(left);
