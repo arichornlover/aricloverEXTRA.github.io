@@ -7,15 +7,16 @@ var classicVersions = [
   "1.21.0","1.21.1","1.21.2","1.21.3","1.21.4","1.21.5","1.21.6","1.21.7","1.21.8","1.21.9","1.21.10","1.21.11"
 ];
 
-var yearVersions = ["26.1", "26.1.1", "26.1.2", "26.2-snapshot-1", "26.2-snapshot-2", "26.2-snapshot-3", "26.2-snapshot-4", "26.2-snapshot-5", "26.3", "26.4"];
+var yearVersions = ["26.1", "26.1.1", "26.1.2", "26.2", "26.3", "26.4"];
 
 var allVersions = [...classicVersions, ...yearVersions];
 
 var versionFiles = {
   "Mainline (1.19.0+)": {
-    "2026.3.24": { file: "Default-Dark-Mode-Expansion-1.19.0+-2026.3.24.zip", changelog: "changelogs/2026.3.24.txt", supportedSpec: "1.19.x-26.1.x" },
-    "2026.2.1": { file: "Default-Dark-Mode-Expansion-1.19.0+-2026.2.1.zip", changelog: "changelogs/2026.2.1.txt", supportedSpec: "1.19.x-1.21.x" },
-    "2026.1.1": { file: "Default-Dark-Mode-Expansion-1.19.0+-2026.1.1.zip", changelog: "changelogs/2026.1.1.txt", supportedSpec: "1.19.x-1.21.x" },
+    "2026.6.16": { file: "Default-Dark-Mode-Expansion-1.19.0+-2026.6.16.zip", changelog: "changelogs/2026.6.16.txt", supportedSpec: "1.19.x-26.2.x" },
+    "2026.3.24": { file: "Default-Dark-Mode-Expansion-1.19.0+-2026.3.24.zip", supportedSpec: "1.19.x-26.1.x" },
+    "2026.2.1": { file: "Default-Dark-Mode-Expansion-1.19.0+-2026.2.1.zip", supportedSpec: "1.19.x-1.21.x" },
+    "2026.1.1": { file: "Default-Dark-Mode-Expansion-1.19.0+-2026.1.1.zip", supportedSpec: "1.19.x-1.21.x" },
     "2025.10.31": { file: "Default-Dark-Mode-Expansion-1.19.0+-2025.10.31.zip", supportedSpec: "1.19.x-1.21.10" },
     "2025.10.1": { file: "Default-Dark-Mode-Expansion-1.19.0+-2025.10.1.zip", supportedSpec: "1.19.x-1.21.8" },
     "2025.8.1": { file: "Default-Dark-Mode-Expansion-1.19.0+-2025.8.1.zip", supportedSpec: "1.19.x-1.21.8" },
