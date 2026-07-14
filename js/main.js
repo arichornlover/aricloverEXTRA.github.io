@@ -4,14 +4,16 @@ const downloadBtn = document.getElementById("downloadBtn");
 const generateBtn = document.getElementById("generateBtn");
 const backendStatus = document.getElementById("backendStatus");
 let selectedVersionKey = null;
+let versionSearchIndex = [];
 
 function buildVersionList() {
   if (!versionListEl) return;
   versionListEl.innerHTML = "";
+  versionSearchIndex = [];
 
   for (const group in versionFiles) {
     const groupLabel = document.createElement("div");
-    groupLabel.className = "version-group-label small muted";
+    groupLabel.className = "version-group-label";
     groupLabel.textContent = group;
     versionListEl.appendChild(groupLabel);
 
@@ -22,6 +24,17 @@ function buildVersionList() {
       const item = document.createElement("div");
       item.className = "version-item";
       item.dataset.key = key;
+      item.dataset.searchText = `${label} ${entry.file} ${entry.supportedSpec}`.toLowerCase();
+
+      versionSearchIndex.push({
+        key,
+        element: item,
+        searchText: item.dataset.searchText,
+        label,
+        group,
+        file: entry.file,
+        supportedSpec: entry.supportedSpec
+      });
 
       const left = document.createElement("div");
       left.className = "version-left";
@@ -69,8 +82,17 @@ function buildVersionList() {
         item.classList.add("selected");
         selectedVersionKey = key;
         const ent = versionFiles[group][label];
-        versionHint.innerHTML = `Selected: <strong>${label}</strong> — <code>${ent.file}</code>`;
+        versionHint.innerHTML = `✓ Selected: <strong>${label}</strong> — <code>${ent.file}</code>`;
       };
+
+      // iOS-friendly touch feedback
+      item.addEventListener("touchstart", function() {
+        this.style.opacity = "0.7";
+      }, { passive: true });
+
+      item.addEventListener("touchend", function() {
+        this.style.opacity = "1";
+      }, { passive: true });
 
       versionListEl.appendChild(item);
     }
@@ -88,7 +110,15 @@ function getSelectedVersion() {
 
 downloadBtn.onclick = () => {
   const sel = getSelectedVersion();
-  if (!sel) { versionHint.textContent = "Select a version above first."; return; }
+  if (!sel) { 
+    versionHint.innerHTML = "⚠️ Select a version above first.";
+    versionHint.style.color = "var(--accent)";
+    setTimeout(() => {
+      versionHint.style.color = "var(--text-secondary)";
+      versionHint.innerHTML = "Select a version above to download or use as the base.";
+    }, 2000);
+    return; 
+  }
   window.location.href = sel.url;
 };
 
@@ -155,17 +185,20 @@ async function recolorPngArrayBuffer(buf) {
 
 async function generateCustomizedPack() {
   const sel = getSelectedVersion();
-  if (!sel) { backendStatus.textContent = "Select a base version first."; return; }
+  if (!sel) { 
+    backendStatus.textContent = "⚠️ Select a base version first.";
+    return; 
+  }
 
   generateBtn.disabled = true;
   generateBtn.textContent = "Generating...";
-  backendStatus.textContent = "Downloading base pack...";
+  backendStatus.textContent = "📥 Downloading base pack...";
 
   try {
     const resp = await fetch(sel.url);
     if (!resp.ok) throw 0;
     const buf = await resp.arrayBuffer();
-    backendStatus.textContent = "Recoloring textures...";
+    backendStatus.textContent = "🎨 Recoloring textures...";
 
     const zip = await JSZip.loadAsync(buf);
     const newZip = new JSZip();
@@ -182,7 +215,7 @@ async function generateCustomizedPack() {
     });
 
     await Promise.all(tasks);
-    backendStatus.textContent = "Packing customized .zip...";
+    backendStatus.textContent = "📦 Packing customized .zip...";
     const blob = await newZip.generateAsync({ type: "blob" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -190,10 +223,10 @@ async function generateCustomizedPack() {
     a.download = sel.file.replace(".zip", "") + "-customized.zip";
     a.click();
     URL.revokeObjectURL(url);
-    backendStatus.textContent = "Customized pack generated.";
+    backendStatus.textContent = "✓ Customized pack generated!";
   } catch (e) {
     console.error(e);
-    backendStatus.textContent = "Generation failed.";
+    backendStatus.textContent = "✗ Generation failed. Check console for errors.";
   } finally {
     generateBtn.disabled = false;
     generateBtn.textContent = "Generate customized pack";
