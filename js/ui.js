@@ -49,9 +49,13 @@ borderColorPicker?.addEventListener("input", () => {
   refreshAllPreviews();
 });
 
+// iOS-friendly color picker interaction
 mainColorFill?.addEventListener("click", () => mainColorPicker?.click());
+mainColorFill?.addEventListener("touchend", () => mainColorPicker?.click(), { passive: true });
 mainColorFill?.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); mainColorPicker?.click(); }});
+
 borderColorFill?.addEventListener("click", () => borderColorPicker?.click());
+borderColorFill?.addEventListener("touchend", () => borderColorPicker?.click(), { passive: true });
 borderColorFill?.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); borderColorPicker?.click(); }});
 
 document.getElementById("vanillaPresetBtn")?.addEventListener("click", () => {
@@ -93,15 +97,15 @@ document.getElementById("randomizeBtn")?.addEventListener("click", () => {
 document.getElementById("copyMainBtn")?.addEventListener("click", async () => {
   try { await navigator.clipboard.writeText(mainColorPicker.value); }
   catch {} 
-  document.getElementById("copyMainBtn").textContent = "Copied";
-  setTimeout(() => document.getElementById("copyMainBtn").textContent = "Copy", 1200);
+  document.getElementById("copyMainBtn").textContent = "Copied!";
+  setTimeout(() => document.getElementById("copyMainBtn").textContent = "Copy", 1500);
 });
 
 document.getElementById("copyBorderBtn")?.addEventListener("click", async () => {
   try { await navigator.clipboard.writeText(borderColorPicker.value); }
   catch {}
-  document.getElementById("copyBorderBtn").textContent = "Copied";
-  setTimeout(() => document.getElementById("copyBorderBtn").textContent = "Copy", 1200);
+  document.getElementById("copyBorderBtn").textContent = "Copied!";
+  setTimeout(() => document.getElementById("copyBorderBtn").textContent = "Copy", 1500);
 });
 
 /* Previews */
@@ -126,9 +130,11 @@ function loadPreviews() {
       loaded[i] = false;
       const ctx = canvases[i].getContext("2d");
       canvases[i].width = 176; canvases[i].height = 166;
-      ctx.fillStyle = "#111"; ctx.fillRect(0,0,176,166);
-      ctx.fillStyle = "#ddd"; ctx.font = "14px sans-serif";
-      ctx.fillText("Preview missing", 10, 20);
+      ctx.fillStyle = "#ccc"; ctx.fillRect(0,0,176,166);
+      ctx.fillStyle = "#666"; ctx.font = "14px system-ui"; 
+      ctx.textAlign = "center";
+      ctx.fillText("Preview unavailable", 88, 75);
+      ctx.fillText("Check connection", 88, 95);
     };
   });
 }
@@ -164,6 +170,7 @@ function rotatePreview(dir = 1) {
 }
 
 rotateBtn?.addEventListener("click", () => rotatePreview(1));
+rotateBtn?.addEventListener("touchend", (e) => { e.preventDefault(); rotatePreview(1); }, { passive: false });
 
 const SWIPE_THRESHOLD = 40;
 let pointerDown = false;
@@ -186,6 +193,13 @@ previewCarousel?.addEventListener("pointerup", e => {
 
 previewCarousel?.addEventListener("pointercancel", () => pointerDown = false);
 
+// Prevent zoom on double-tap for non-input elements
+document.addEventListener("touchmove", function(e) {
+  if (e.touches.length > 1) {
+    e.preventDefault();
+  }
+}, { passive: false });
+
 /* Filter toggle */
 const filterToggle = document.getElementById("filterToggle");
 const filterContainer = document.getElementById("filterContainer");
@@ -195,6 +209,15 @@ filterToggle?.addEventListener("click", () => {
   filterToggle.classList.toggle("open");
   filterContainer.classList.toggle("open");
 });
+
+// iOS-friendly touch feedback for filter toggle
+filterToggle?.addEventListener("touchstart", function() {
+  this.style.opacity = "0.8";
+}, { passive: true });
+
+filterToggle?.addEventListener("touchend", function() {
+  this.style.opacity = "1";
+}, { passive: true });
 
 clearFiltersBtn?.addEventListener("click", () => {
   clearAllFilters();
@@ -210,4 +233,23 @@ document.querySelectorAll(".filter-pill:not(.disabled)").forEach(pill => {
     pill.classList.toggle("active");
     toggleFilter(spec, pill.classList.contains("active"));
   });
+
+  // iOS touch feedback
+  pill.addEventListener("touchstart", function() {
+    this.style.opacity = "0.7";
+  }, { passive: true });
+
+  pill.addEventListener("touchend", function() {
+    this.style.opacity = "1";
+  }, { passive: true });
 });
+
+/* Viewport height fix for iOS Safari */
+function setVh() {
+  let vh = window.innerHeight * 0.01;
+  document.documentElement.style.setProperty('--vh', `${vh}px`);
+}
+
+window.addEventListener('resize', setVh);
+window.addEventListener('orientationchange', setVh);
+setVh();

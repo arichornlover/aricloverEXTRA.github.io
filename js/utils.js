@@ -256,7 +256,13 @@ function applyFilters() {
     const [group, label] = key.split("::");
     const entry = versionFiles[group][label];
     const supportedSet = expandSpecToSet(entry.supportedSpec);
-    item.style.display = releaseMatchesFilters(supportedSet) ? "" : "none";
+    const shouldShow = releaseMatchesFilters(supportedSet);
+    item.style.display = shouldShow ? "" : "none";
+    
+    // Smooth animation for showing/hiding
+    if (shouldShow) {
+      item.style.animation = "slideUp 0.3s ease-out";
+    }
   });
 }
 
